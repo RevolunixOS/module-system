@@ -1,124 +1,53 @@
-<div align="center">
+# RevolunixOS system modules
 
-<img alt="NixOS" src="assets/nixos_logo_custom_colors.svg" width="120px"/>
+Reusable NixOS and Home Manager configuration fragments for RevolunixOS. The
+flake exposes separate CLI and graphical bases as importable paths.
 
-# ❖ Pikatsuto's Dotfiles ❖
+## Exported attributes
 
-![GitHub Repo stars](https://img.shields.io/github/stars/Pikatsuto/dotfiles?style=for-the-badge&labelColor=1B2330&color=807EDD) ![GitHub last commit](https://img.shields.io/github/last-commit/Pikatsuto/dotfiles?style=for-the-badge&labelColor=1B2330&color=807EDD) ![GitHub repo size](https://img.shields.io/github/repo-size/Pikatsuto/dotfiles?style=for-the-badge&labelColor=1B2330&color=807EDD)
+| Attribute | Contents |
+| --- | --- |
+| `configsImports.base.cli.system` | Boot, services, programs, and console configuration |
+| `configsImports.base.cli.home` | CLI user programs and writable configuration helpers |
+| `configsImports.base.graphical.system` | Graphical boot, services, programs, and polkit settings |
+| `configsImports.base.graphical.home` | Hyprland, Waybar, Rofi, Kitty, GTK, tmux, lock screen, and related user configuration |
 
-*Configuration files for my GNU+Linux system.*
+## Flake input
 
-#
-</div>
+```nix
+inputs.revolunix-system = {
+  url = "github:RevolunixOS/module-system";
+  inputs.nixpkgs.follows = "nixpkgs";
+};
+```
 
-## :wrench: <samp>INSTALLATION</samp>
+The exported paths can then be imported from a consuming flake, for example:
 
-### :paperclip: <samp>Standard</samp>
+```nix
+imports = [
+  inputs.revolunix-system.configsImports.base.cli.system
+];
+```
 
-> **Warning**
-> Some additional configuration may be required
+Home Manager fragments belong in a Home Manager module, while `system`
+fragments belong in a NixOS module.
 
-<kbd>I.</kbd> Clone the repository
+> [!WARNING]
+> The current `flake.nix` destructures a `home-manager` input without declaring
+> it. Fix or remove that parameter before relying on direct flake evaluation.
+> The repository also contains personal application state and should be audited
+> before reuse.
 
-> **Note**
-> I personally clone the repository as my home[^clone_as_home].
+## Development
+
 ```bash
-git clone https://github.com/Pikatsuto/dotfiles.git --recurse-submodules
-cd dotfiles
+nix flake show
+nix fmt
 ```
 
-<kbd>II.</kbd> Copy the configuration
-```bash
-cp -r .* ~
-```
+The flake pins `nixos-24.05`; update and test the input before targeting a newer
+NixOS release.
 
-### :cherry_blossom: <samp>Nix</samp>
+## License
 
-Copy the flake config
-
-```bash
-cp flake* ~
-```
-
-> Note: Don't forget to edit the appropriate settings such as username & hardware configuration
-> You can use `cp /etc/nixos/hardware-configuration.nix .config/nixos/hardware-configuration.nix`
-
-```
-sudo nixos-rebuild switch --flake '.'
-```
-
-> **Warning**
-> I do not use a display manager, use `startx`
-> or setup your own display manager
-
-## :bookmark_tabs: <samp>DETAILS</samp>
-
-<img alt="Qtile is a tiling window manager" src="assets/screenshots/i3.png" width="400px" align="right"/>
-
-- Linux Kernel: [6.4.3](https://www.kernel.org/)
-- Desktop Environment: [I3-WM](https://i3wm.org/)
-- Terminal Emulator: [Alacritty](https://github.com/alacritty/alacritty)
-- Shell: [Fish](https://fishshell.com/) with [Oh my Fish](https://github.com/oh-my-fish/oh-my-fish)
-- Compositor: [Picom](https://github.com/yshui/picom)
-- Notifier: [dunst](https://dunst-project.org)
-
-### <samp>Dev</samp>
-
-<img alt="Qtile is a tiling window manager" src="assets/screenshots/nvim_ide.png" width="400px" align="right"/>
-
-- Jetbrains IDE Suite: [PyCharm](https://www.jetbrains.com/pycharm), [CLion](https://www.jetbrains.com/clion), ...
-- GUI Text Editor: [Visual Studio Code](https://code.visualstudio.com/)
-- TUI Commit Helper: [Lazygit](https://github.com/jesseduffield/lazygit)
-- IDE: [NeoVIM](https://neovim.io/)
-
-### <samp>Other Utilities</samp>
-
-- TUI File manager: [Ranger](https://ranger.github.io)
-- GUI File manager: [Thunar](https://docs.xfce.org/xfce/thunar/start)
-- Resource monitor: [Bpytop](https://github.com/aristocratos/bpytop)
-- screenshot tool: [Flameshot](https://flameshot.org)
-
-## :art: <samp>Colors</samp>
-
-<table align="right">
-  <tr>
-    <td align="center">
-      <samp>
-        This color scheme is OneDark
-        <a href="https://github.com/joshdick/onedark.vim">OneDark</a>
-      </samp>
-    </td>
-  </tr>
-</table>
-
-![tty](assets/screenshots/palette.png)
-
-[^clone_as_home]:
-    Cloning as the home directory
-    <br>
-    <kbd>I.</kbd> Bare Clone
-    ```bash
-    git clone --bare https://github.com/Pikatsuto/dotfiles.git $HOME/.git
-    git --git-dir=$HOME/.git --work-tree=$HOME remote set-url origin git@github.com:Gabriel/dotfiles
-    git config --local core.bare false
-    ```
-    <kbd>II.</kbd> Update
-    ```bash
-    git reset --hard HEAD
-    git pull --rebase
-    ```
-    <kbd>III.</kbd> Submodules
-    ```bash
-    git submodule init
-    git submodule update --init --force
-    ```
-    <kbd>IV.</kbd> Fix history
-    ```bash
-    git clone https://github.com/Pikatsuto/dotfiles.git tmp
-    cp tmp/.git ~ -r
-    git add .
-    ```
-
-<div align="center">
-    <img alt="cat" src="https://raw.githubusercontent.com/catppuccin/catppuccin/main/assets/footers/gray0_ctp_on_line.svg?sanitize=true"/>
-</div>
+See [`LICENSE`](LICENSE).
